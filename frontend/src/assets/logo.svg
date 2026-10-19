@@ -1,0 +1,25 @@
+<!-- RideSetGo Original Logo SVG -->
+<!-- Design: A stylized "RS" monogram forming a forward-moving arrow/circle -->
+<!-- Colors: Deep indigo-slate (#5266e8) with warm amber accent (#f59e0b) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="rsgoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5266e8" />
+      <stop offset="100%" stop-color="#3d4fd6" />
+    </linearGradient>
+  </defs>
+  <!-- Outer circle (badge shape) -->
+  <circle cx="16" cy="16" r="14" fill="url(#rsgoGradient)" />
+  <!-- Inner cutout forming RS monogram -->
+  <path
+    d="M10 10h4v4h-4zM10 14h8v4h-8zM14 10l4 4M18 10l-4 4"
+    stroke="#ffffff"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+    opacity="0.9"
+  />
+  <!-- Accent dot -->
+  <circle cx="22" cy="10" r="1.5" fill="#f59e0b" />
+</svg>

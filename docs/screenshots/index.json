@@ -1,0 +1,81 @@
+{
+  "generatedAt": "2026-10-19T14:43:48.058Z",
+  "baseUrl": "http://127.0.0.1:5173",
+  "screenshots": [
+    {
+      "name": "01-landing-page",
+      "note": "RideSetGo landing page",
+      "bytes": 6764
+    },
+    {
+      "name": "02-login",
+      "note": "Passenger login screen",
+      "bytes": 30680
+    },
+    {
+      "name": "03-signup",
+      "note": "Passenger signup screen",
+      "bytes": 100815
+    },
+    {
+      "name": "04-home-fare-search",
+      "note": "Home screen - pickup/destination search and fare estimate",
+      "bytes": 131560
+    },
+    {
+      "name": "05-fare-estimate",
+      "note": "Fare estimate for Golden Temple to Amritsar Airport (ATQ)",
+      "bytes": 131560
+    },
+    {
+      "name": "06-trip-history",
+      "note": "Trip history for the demo passenger",
+      "bytes": 63371
+    },
+    {
+      "name": "07-live-trip-tracking",
+      "note": "Live trip tracking screen for ride #12",
+      "bytes": 156606
+    },
+    {
+      "name": "08-trip-details",
+      "note": "Trip details for ride #12",
+      "bytes": 77191
+    },
+    {
+      "name": "09-receipt",
+      "note": "Digital receipt for ride #12",
+      "bytes": 75325
+    },
+    {
+      "name": "10-safety",
+      "note": "Safety centre - trusted contacts and incident reports",
+      "bytes": 123198
+    },
+    {
+      "name": "11-help",
+      "note": "Help and FAQ page",
+      "bytes": 109384
+    },
+    {
+      "name": "12-driver-dashboard",
+      "note": "Driver Partner dashboard - incoming requests and my rides",
+      "bytes": 96950
+    },
+    {
+      "name": "13-admin-dashboard",
+      "note": "Admin operations dashboard - stats, rides, payments, system health",
+      "bytes": 134646
+    },
+    {
+      "name": "14-mobile-landing",
+      "note": "Landing page on a 390x844 mobile viewport",
+      "bytes": 549133
+    },
+    {
+      "name": "15-mobile-home",
+      "note": "Home screen on a 390x844 mobile viewport",
+      "bytes": 157592
+    }
+  ]
+}
