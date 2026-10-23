@@ -1,0 +1,32 @@
+﻿shape: (49310, 21)
+cols: ['pickup_location', 'dropoff_location', 'pickup_latitude', 'pickup_longitude', 'dropoff_latitude', 'dropoff_longitude', 'pickup_datetime', 'distance_km', 'hour', 'day_of_week', 'passenger_count', 'is_pilgrimage', 'is_airport', 'is_border', 'is_market', 'is_night', 'is_weekend', 'rush_hour', 'fare_amount', 'pickup_enc', 'dropoff_enc']
+pickup_location       object
+dropoff_location      object
+pickup_latitude      float64
+pickup_longitude     float64
+dropoff_latitude     float64
+dropoff_longitude    float64
+pickup_datetime       object
+distance_km          float64
+hour                   int64
+day_of_week            int64
+passenger_count        int64
+is_pilgrimage           bool
+is_airport              bool
+is_border               bool
+is_market               bool
+is_night                bool
+is_weekend              bool
+rush_hour               bool
+fare_amount          float64
+pickup_enc             int64
+dropoff_enc            int64
+dtype: object
+           pickup_location dropoff_location  ...  pickup_enc  dropoff_enc
+0        Bharawan Da Dhaba  Kapurthala Road  ...           4           19
+1         Mall of Amritsar  GNDU University  ...          24           12
+2       Amritsar Bus Stand  Durgiana Temple  ...           1           10
+3  Guru Nanak Dev Hospital     Majitha Road  ...          14           23
+4           Khalsa College  GNDU University  ...          21           12
+
+[5 rows x 21 columns]

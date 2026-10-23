@@ -333,3 +333,33 @@ class DriverApplicationOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# ---------- Fare compare ----------
+class FareCompareRequest(BaseModel):
+    pickup_location: str
+    dropoff_location: str
+    passenger_count: int = Field(default=1, ge=1, le=6)
+    hour: int = Field(default=12, ge=0, le=23)
+
+
+class FareCompareItem(BaseModel):
+    name: str
+    display_name: str
+    icon: Optional[str] = None
+    multiplier: float
+    min_fare: float
+    estimated_fare_inr: float
+    is_cheapest: bool = False
+    is_fastest: bool = False
+
+
+class FareCompareResponse(BaseModel):
+    pickup_location: str
+    dropoff_location: str
+    distance_km: float
+    duration_min: int
+    base_fare_inr: float
+    items: List[FareCompareItem]
+    currency: str = "INR"
+    note: str

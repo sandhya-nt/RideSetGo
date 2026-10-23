@@ -1,0 +1,15 @@
+{
+  "01_fare_distribution.png": "Fares are right-skewed: most trips cluster around ₹100-250, with a long tail of expensive long/airport trips up to ~₹1020.",
+  "02_distance_vs_fare.png": "Fare rises roughly linearly with distance (strong positive trend); the regression line confirms distance is the dominant price driver.",
+  "03_top_pickup_fare.png": "Airport/border/pilgrimage endpoints command the highest average fares, confirming special-zone flags add predictive value.",
+  "03_top_dropoff_fare.png": "Airport/border/pilgrimage endpoints command the highest average fares, confirming special-zone flags add predictive value.",
+  "04_fare_boxplot_top_locations.png": "Fare spread widens for high-value locations (airport/border), while inner-city trips stay tightly clustered at lower fares.",
+  "05_fare_by_hour.png": "Fares peak in the morning (8-9) and evening (17-19) rush windows and dip at night, matching the rush_hour flag.",
+  "06_fare_by_dow.png": "Weekend days (5,6) show slightly higher average fares than weekdays.",
+  "07_weekend_vs_weekday.png": "Weekend trips are modestly more expensive on average than weekday trips.",
+  "08_rush_hour_vs_normal.png": "Rush-hour trips carry a small fare premium over normal-hour trips.",
+  "09_night_vs_day.png": "Night trips (22:00-06:00) are slightly pricier, consistent with a night surcharge in the data.",
+  "10_flag_effect_on_fare.png": "Airport and border trips have the highest average fares; market and pilgrimage trips also cost more than ordinary trips.",
+  "11_correlation_heatmap.png": "distance_km correlates most strongly with fare_amount; special-zone flags (especially airport/border) show moderate positive correlation.",
+  "12_fare_heatmap_pickup_dropoff.png": "Airport/border pairs (e.g. Wagah Border <-> Amritsar Airport) sit at the top of the fare matrix, confirming long cross-city trips cost most."
+}

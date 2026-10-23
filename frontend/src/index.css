@@ -1,41 +1,71 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg: #FAF7F2;
+    --surface: #FFFFFF;
+    --surface-soft: #F3EEE6;
+    --text: #2B2623;
+    --text-muted: #7A7068;
+    --border: #EAE3D9;
+    --primary: #E60023;
+    --primary-soft: #FFE3E7;
+  }
+  .dark {
+    --bg: #1F1B19;
+    --surface: #2A2522;
+    --surface-soft: #24201D;
+    --text: #F3EEE6;
+    --text-muted: #A8A099;
+    --border: #3A3430;
+    --primary: #E60023;
+    --primary-soft: #3A1A1F;
+  }
   html {
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-rsgo-50 text-rsgo-900 font-sans antialiased;
+    @apply bg-[var(--bg)] text-[var(--text)] font-sans antialiased;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    transition: background-color 200ms ease, color 200ms ease;
   }
   #root {
     min-height: 100vh;
+  }
+  h1, h2, h3, .font-display {
+    font-family: "DM Serif Display", "Playfair Display", serif;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-orange-600 hover:bg-orange-700 text-white font-medium py-3.5 px-6 rounded-2xl transition-all duration-200 shadow-rsgo active:scale-95 disabled:opacity-60 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2;
+    @apply bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-6 rounded-pill transition-all duration-200 shadow-soft active:scale-95 disabled:opacity-60 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2;
   }
-  .btn-outline {
-    @apply border-2 border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white font-medium py-3.5 px-6 rounded-2xl transition-all duration-200 active:scale-95 disabled:opacity-60 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2;
+  .btn-secondary {
+    @apply bg-rsgo-100 hover:bg-rsgo-200 text-rsgo-900 font-medium py-3 px-6 rounded-pill transition-all duration-200 active:scale-95 disabled:opacity-60 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2;
   }
   .btn-ghost {
-    @apply bg-white hover:bg-gray-50 text-rsgo-700 font-medium py-3 px-6 rounded-xl transition-all duration-200 border border-gray-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2;
+    @apply bg-transparent hover:bg-rsgo-100 text-rsgo-700 font-medium py-3 px-6 rounded-pill transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2;
+  }
+  .btn-danger {
+    @apply bg-error hover:bg-red-700 text-white font-medium py-3 px-6 rounded-pill transition-all duration-200 active:scale-95 disabled:opacity-60 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2;
   }
   .card {
-    @apply bg-white rounded-3xl shadow-rsgo border border-gray-100 overflow-hidden transition-all duration-200 hover:shadow-rsgo-lg;
+    @apply bg-white rounded-3xl shadow-card border border-rsgo-200 overflow-hidden transition-all duration-200 hover:shadow-soft;
   }
+  .dark .card { @apply bg-surface border-rsgo-800; }
   .card-hover {
-    @apply bg-white rounded-3xl shadow-rsgo-sm border border-gray-100 transition-all duration-200 hover:shadow-rsgo hover:border-gray-200;
+    @apply bg-white rounded-3xl shadow-card border border-rsgo-200 transition-all duration-200 hover:shadow-soft hover:-translate-y-0.5;
   }
+  .dark .card-hover { @apply bg-surface border-rsgo-800; }
   .input-field {
-    @apply w-full px-4 py-3.5 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all duration-200 bg-gray-50 text-rsgo-900;
+    @apply w-full px-4 py-3.5 rounded-2xl border border-rsgo-200 focus:ring-2 focus:ring-orange-400 focus:border-orange-500 outline-none transition-all duration-200 bg-rsgo-100 text-rsgo-900 placeholder:text-rsgo-600;
   }
+  .dark .input-field { @apply bg-rsgo-100 text-rsgo-50 placeholder:text-rsgo-600; }
   .label {
     @apply block text-sm font-medium text-rsgo-700 mb-1.5;
   }
@@ -46,10 +76,16 @@
     @apply text-center mb-12;
   }
   .section-title {
-    @apply text-3xl md:text-4xl font-bold text-rsgo-900 mb-4 tracking-tight;
+    @apply text-3xl md:text-4xl font-display text-rsgo-900 mb-4 tracking-tight;
   }
   .section-subtitle {
     @apply text-lg text-rsgo-600 max-w-2xl mx-auto;
+  }
+  .pill {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-pill text-xs font-medium bg-primary-soft text-orange-700;
+  }
+  .skeleton {
+    @apply animate-pulse bg-rsgo-100 rounded-2xl;
   }
 }
 
