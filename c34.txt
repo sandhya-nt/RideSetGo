@@ -1,0 +1,2 @@
+### 💾 Step 1: Export Trained ML Model & Preprocessing Encoders
+We serialize the trained Random Forest Regressor and our `LabelEncoder` objects so the Streamlit application can load them instantly without retraining.

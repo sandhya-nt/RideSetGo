@@ -1,0 +1,17 @@
+# ================== BUTTON ==================
+def on_click(b):
+    with out1:
+        clear_output()
+        result = predict_fare(pickup_dd, pickup_txt, drop_dd, drop_txt, pax.value, time.value, vehicle.value, bags.value)
+        print(result)
+
+    with out2:
+        clear_output()
+        p_name, p_coord = get_location(pickup_dd, pickup_txt)
+        d_name, d_coord = get_location(drop_dd, drop_txt)
+
+        if p_coord and d_coord:
+            map_html = show_map(p_coord, d_coord, p_name, d_name)
+            display(HTML(map_html)) # Display the map with found coordinates
+
+btn.on_click(on_click)

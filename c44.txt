@@ -1,0 +1,5 @@
+df = pd.read_csv("amritsar_uber_dataset.csv")
+
+print("Dataset loaded successfully!")
+print("Shape:", df.shape)
+display(df.head())

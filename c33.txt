@@ -1,0 +1,13 @@
+# Initialize rendering for the active default tab layout
+render_predict()
+
+# Render clean integrated App Layout header block
+display(HTML("""
+<div style='background-color:#09091a; padding:18px; border-radius:12px; margin-bottom:15px; text-align:center; font-family:\'Segoe UI\', sans-serif; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>
+    <h1 style='color:#ffffff; margin:0; font-size:24px;'>🚗 Uber Amritsar Multi-Modal Portal</h1>
+    <p style='color:#94a3b8; margin:5px 0 0 0; font-size:13px;'>Integrated Machine Learning Front-End Dashboard</p>
+</div>
+"""))
+
+# Present the main app workspace containing the tabs
+display(tab)

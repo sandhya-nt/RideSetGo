@@ -1,0 +1,2 @@
+# ================== INSTALL ==================
+!pip install ipywidgets folium geopy -q

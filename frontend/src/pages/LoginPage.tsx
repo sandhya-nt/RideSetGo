@@ -5,10 +5,12 @@ import { authService, getApiError } from "@/services/api";
 import { ErrorAlert, LoadingSpinner } from "@/components/common";
 import { Logo } from "@/components/Logo";
 import { Link } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -79,14 +81,25 @@ export function LoginPage() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Password
             </label>
-            <input
-              type="password"
-              required
-              className="input-field"
-              placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                autoComplete="current-password"
+                className="input-field pr-10"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-rsgo-600"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
           {error && <ErrorAlert message={error} />}
           <button

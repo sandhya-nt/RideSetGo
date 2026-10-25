@@ -1,0 +1,14 @@
+# ================== GET LOCATION ==================
+def get_location(dropdown, textbox):
+    if textbox.value.strip() != "":
+        coords = get_coordinates(textbox.value)
+        if coords:
+            return textbox.value, coords
+        else:
+            suggestion = suggest_location(textbox.value)
+            if suggestion:
+                return suggestion, location_coords[suggestion]
+            return None, None
+    else:
+        loc = dropdown.value
+        return loc, location_coords[loc]

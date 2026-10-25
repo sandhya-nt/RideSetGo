@@ -1,0 +1,54 @@
+
+# ================== MODEL ==================
+import numpy as np
+
+# Dynamically identify the passenger and hour columns from the dataset
+passenger_col = [col for col in df.columns if 'pass' in col.lower()]
+passenger_col = passenger_col[0] if passenger_col else None
+
+hour_col = [col for col in df.columns if 'hour' in col.lower() or 'time' in col.lower()]
+hour_col = hour_col[0] if hour_col else None
+
+# Calculate distance_km using pickup and dropoff coordinates if not present
+if 'distance_km' not in df.columns:
+    if all(col in df.columns for col in ['pickup_lat', 'pickup_lng', 'drop_lat', 'drop_lng']):
+        # Simple Euclidean approximation converted to km
+        df['distance_km'] = ((df['drop_lat'] - df['pickup_lat'])**2 + (df['drop_lng'] - df['pickup_lng'])**2)**0.5 * 111
+    else:
+        df['distance_km'] = 5.0 # Fallback default
+
+# Fallbacks if columns are not found
+if passenger_col:
+    df['passenger_count'] = df[passenger_col]
+else:
+    df['passenger_count'] = np.random.randint(1, 5, size=len(df))
+
+# Convert categorical times of day into numeric representation
+if hour_col:
+    # Map strings like 'Morning', 'Afternoon', 'Evening', 'Night' to numeric values
+    time_mapping = {
+        'morning': 9,
+        'afternoon': 14,
+        'evening': 18,
+        'night': 22
+    }
+
+    # Check if the values are strings or already numeric
+    if df[hour_col].dtype == object:
+        df['hour'] = df[hour_col].str.lower().map(time_mapping).fillna(12)
+    else:
+        df['hour'] = df[hour_col]
+else:
+    df['hour'] = np.random.randint(0, 24, size=len(df))
+
+features = ['pickup_code', 'dropoff_code', 'distance_km', 'passenger_count', 'hour']
+X = df[features]
+y = df['fare_amount']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+model = RandomForestRegressor(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+print("✅ Model Ready")
+print("R2:", r2_score(y_test, model.predict(X_test)))

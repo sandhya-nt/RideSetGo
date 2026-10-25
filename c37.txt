@@ -1,0 +1,229 @@
+%%writefile app.py
+import streamlit as st
+import pandas as pd
+import numpy as np
+import pickle
+import datetime
+
+# Set page title and layout
+st.set_page_config(
+    page_title="Uber Amritsar Fare Predictor",
+    page_icon="🚗",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Inject Custom Sleek Uber Dark/Light CSS
+st.markdown("""
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
+    }
+    .main {
+        background-color: #0a0a0a;
+        color: #ffffff;
+    }
+    .uber-header {
+        background-color: #000000;
+        padding: 30px;
+        border-radius: 12px;
+        border: 1px solid #1a1a1a;
+        text-align: center;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .uber-card {
+        background-color: #111111;
+        border: 1px solid #222222;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .stButton>button {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-weight: 600 !important;
+        border-radius: 8px !important;
+        border: none !important;
+        padding: 10px 24px !important;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+    .stButton>button:hover {
+        background-color: #e0e0e0 !important;
+        transform: translateY(-2px);
+    }
+    .reset-btn>button {
+        background-color: #1c1c1c !important;
+        color: #ffffff !important;
+        border: 1px solid #333333 !important;
+    }
+    .reset-btn>button:hover {
+        background-color: #2c2c2c !important;
+    }
+    .metric-num {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 10px 0;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Helper to load models robustly
+@st.cache_resource
+def load_ml_assets():
+    try:
+        with open('model.pkl', 'rb') as m_file:
+            model = pickle.load(m_file)
+        with open('encoders.pkl', 'rb') as e_file:
+            assets = pickle.load(e_file)
+        return model, assets['le_pickup'], assets['le_dropoff'], assets['location_coords']
+    except Exception as e:
+        st.error(f"Failed to load serialized ML assets: {e}")
+        return None, None, None, None
+
+model, le_pickup, le_dropoff, location_coords = load_ml_assets()
+
+# Session State for prediction history
+if 'history' not in st.session_state:
+    st.session_state.history = []
+
+# Main Title Header
+st.markdown("""
+<div class="uber-header">
+    <h1 style="color: white; margin: 0; font-size: 2.5rem; font-weight:700;">🚗 Uber Amritsar</h1>
+    <p style="color: #888888; margin: 10px 0 0 0; font-size: 1.1rem;">Machine Learning Multi-Modal Fare Predictor</p>
+</div>
+""", unsafe_allow_html=True)
+
+# Main Columns Layout
+col1, col2 = st.columns([3, 2])
+
+with col1:
+    st.markdown('<div class="uber-card">', unsafe_allow_html=True)
+    st.markdown('### 📍 Configure Ride Parameters')
+
+    # Pick drop downs from current coordinates dictionary
+    locations = sorted(list(location_coords.keys()))
+
+    c_p1, c_p2 = st.columns(2)
+    with c_p1:
+        pickup_selection = st.selectbox("Pickup Station:", locations, index=locations.index("Golden Temple") if "Golden Temple" in locations else 0)
+    with c_p2:
+        dropoff_selection = st.selectbox("Dropoff Destination:", locations, index=locations.index("Airport") if "Airport" in locations else 1)
+
+    st.markdown("**Or Enter Customized GPS Coordinates Below:**")
+    c_c1, c_c2 = st.columns(2)
+    with c_c1:
+        pickup_lat = st.number_input("Pickup Latitude:", value=location_coords[pickup_selection][0], format="%.6f")
+        pickup_lng = st.number_input("Pickup Longitude:", value=location_coords[pickup_selection][1], format="%.6f")
+    with c_c2:
+        dropoff_lat = st.number_input("Dropoff Latitude:", value=location_coords[dropoff_selection][0], format="%.6f")
+        dropoff_lng = st.number_input("Dropoff Longitude:", value=location_coords[dropoff_selection][1], format="%.6f")
+
+    c_o1, c_c3, c_c4 = st.columns(3)
+    with c_o1:
+        vehicle_selection = st.selectbox("Ride Type:", ['Car', 'Bike', 'Activa', 'Auto Rickshaw'])
+    with c_c3:
+        passenger_count = st.number_input("Passengers:", min_value=1, max_value=4, value=1)
+    with c_c4:
+        bags_count = st.number_input("Luggage Bags:", min_value=0, max_value=5, value=0)
+
+    ride_time = st.time_input("Ride Time:", datetime.datetime.now().time())
+
+    # Action buttons row
+    st.markdown('<br/>', unsafe_allow_html=True)
+    b_col1, b_col2, b_col3 = st.columns([2, 1, 1])
+
+    with b_col1:
+        btn_calc = st.button("⚡ BOOK & PREDICT FARE")
+    with b_col2:
+        btn_sample = st.button("🧪 SAMPLE INPUT")
+    with b_col3:
+        st.markdown('<div class="reset-btn">', unsafe_allow_html=True)
+        btn_reset = st.button("🧹 RESET")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # Trigger events
+    if btn_sample:
+        st.info("Sample Golden Temple to Airport inputs pre-filled above.")
+
+    if btn_reset:
+        st.session_state.history = []
+        st.success("Form session successfully reset!")
+        st.rerun()
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with col2:
+    st.markdown('<div class="uber-card" style="min-height: 520px;">', unsafe_allow_html=True)
+    st.markdown('### 💰 Calculated Booking Summary')
+
+    if btn_calc and model is not None:
+        with st.spinner("Calculating best ML fare projections..."):
+            # Calculate precise Distance approximation
+            dist_km = ((dropoff_lat - pickup_lat)**2 + (dropoff_lng - pickup_lng)**2)**0.5 * 111
+            hr = ride_time.hour
+
+            try:
+                p_code = le_pickup.transform([pickup_selection])[0]
+                d_code = le_dropoff.transform([dropoff_selection])[0]
+            except Exception as e:
+                # Graceful fallback decoding if custom coordinate search was specified
+                p_code = 0
+                d_code = 1
+
+            input_df = pd.DataFrame([[p_code, d_code, dist_km, passenger_count, hr]],
+                                    columns=['pickup_code', 'dropoff_code', 'distance_km', 'passenger_count', 'hour'])
+
+            base_fare = model.predict(input_df)[0]
+
+            # Apply business modifiers
+            fare_mod = base_fare
+            if vehicle_selection == "Activa": fare_mod *= 0.6
+            elif vehicle_selection == "Bike": fare_mod *= 0.7
+            elif vehicle_selection == "Auto Rickshaw": fare_mod *= 0.85
+            elif vehicle_selection == "Car": fare_mod *= 1.25
+
+            # Bags
+            fare_mod += (bags_count * 15)
+            final_fare = max(40, round(fare_mod))
+
+            st.markdown(f"""
+            <div style="text-align: center;">
+                <p style="color: #888888; font-size: 1.1rem; margin-bottom: 0;">Est. Ride Fare</p>
+                <div class="metric-num">₹{final_fare}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.markdown("***")
+            st.markdown(f"📊 **Trip Details:**")
+            st.markdown(f"- 🗺️ **Distance**: {dist_km:.2f} km")
+            st.markdown(f"- ⏱️ **Pickup Hour**: {hr}:00 hrs")
+            st.markdown(f"- 👥 **Capacity**: {passenger_count} Passenger(s)")
+            st.markdown(f"- 🎒 **Baggage**: {bags_count} Bag(s)")
+
+            # Save calculation to session history
+            st.session_state.history.append({
+                'time': datetime.datetime.now().strftime("%H:%M:%S"),
+                'route': f"{pickup_selection} ➔ {dropoff_selection}",
+                'vehicle': vehicle_selection,
+                'fare': f"₹{final_fare}"
+            })
+    else:
+        st.write("Waiting for user input... Fill route parameters and click predict to calculate ML dispatch fare rates.")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# Render Session Prediction History
+st.markdown('<div class="uber-card">', unsafe_allow_html=True)
+st.markdown('### 📜 Current Session Prediction History')
+if st.session_state.history:
+    hist_df = pd.DataFrame(st.session_state.history)
+    st.dataframe(hist_df, use_container_width=True)
+else:
+    st.info("No predictions recorded in this active web portal session yet.")
+st.markdown('</div>', unsafe_allow_html=True)
+"""

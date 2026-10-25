@@ -1,0 +1,2 @@
+### 🚀 Run the Smart Ride Application
+Execute the cell below to load the complete interactive dashboard. You can toggle between different tabs to test out fare estimation, ride comparisons, real-time analytics graphs, simulated SOS safety features, and trip histories.

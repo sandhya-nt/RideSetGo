@@ -1,0 +1,273 @@
+import ipywidgets as widgets
+from IPython.display import display, HTML, clear_output
+import datetime
+import pandas as pd
+
+# --- Operational Tab Outputs ---
+out_predict = widgets.Output()
+out_compare = widgets.Output()
+out_safety = widgets.Output()
+
+# --- Sleek Mobile App CSS ---
+style_header = """
+<style>
+    .app-header {
+        background: #09091a;
+        color: #ffffff;
+        padding: 15px;
+        border-radius: 12px;
+        text-align: center;
+        margin-bottom: 20px;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .card {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 18px;
+        background: #ffffff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        margin-bottom: 15px;
+        font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .tbl {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+    .tbl th, .tbl td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #edf2f7;
+    }
+    .tbl th {
+        background-color: #f7fafc;
+        color: #4a5568;
+        font-weight: 600;
+    }
+</style>
+"""
+
+# ------------------ 1. BOOK RIDE TAB ------------------
+p_dd = widgets.Dropdown(options=sorted(list(location_coords.keys())), description='Pickup:', layout={'width': '45%'}, value="Golden Temple")
+p_txt = widgets.Text(placeholder='Or type custom address...', description='Custom:', layout={'width': '45%'});
+
+default_drop = "Amritsar Airport (ATQ)" if "Amritsar Airport (ATQ)" in location_coords else list(location_coords.keys())[0]
+d_dd = widgets.Dropdown(options=sorted(list(location_coords.keys())), description='Dropoff:', layout={'width': '45%'}, value=default_drop)
+d_txt = widgets.Text(placeholder='Or type custom address...', description='Custom:', layout={'width': '45%'});
+
+pax_widget = widgets.BoundedIntText(value=1, min=1, max=4, description='Passengers:', layout={'width': '45%'});
+hr_widget = widgets.BoundedIntText(value=datetime.datetime.now().hour, min=0, max=23, description='Hour (0-23):', layout={'width': '45%'});
+bags_widget = widgets.BoundedIntText(value=0, min=0, max=5, description='Bags/Items:', layout={'width': '45%'});
+veh_widget = widgets.Dropdown(options=['Car', 'Bike', 'Activa', 'Auto Rickshaw'], description='Ride Type:', layout={'width': '45%'}, value="Car")
+
+btn_predict = widgets.Button(description="🚗 BOOK / CALCULATE FARE", button_style='success', layout={'width': '92%', 'margin': '15px 0px', 'height': '40px'})
+out_predict_box = widgets.Output()
+
+def on_predict_clicked(b):
+    with out_predict_box:
+        clear_output()
+
+        p_name, p_coord = get_location(p_dd, p_txt)
+        d_name, d_coord = get_location(d_dd, d_txt)
+
+        if not p_coord or not d_coord:
+            display(HTML("<div class='card' style='color:red;'>❌ Location not found. Please spell correctly or pick from the list.</div>"))
+            return
+
+        dist = ((d_coord[0]-p_coord[0])**2 + (d_coord[1]-p_coord[1])**2)**0.5 * 111
+        is_peak, peak_reason, traffic, traffic_mult, est_time = analyze_ride_conditions(hr_widget.value, dist)
+
+        try:
+            p_code = le_pickup.transform([p_name])[0]
+            d_code = le_dropoff.transform([d_name])[0]
+        except:
+            display(HTML(f"<div class='card' style='color:red;'>❌ Endpoint location is out of service zone bounds.</div>"))
+            return
+
+        input_df = pd.DataFrame([[p_code, d_code, dist, pax_widget.value, hr_widget.value]],
+                                columns=['pickup_code', 'dropoff_code', 'distance_km', 'passenger_count', 'hour'])
+        base_fare = model.predict(input_df)[0]
+
+        # Ride Multipliers
+        vehicle_type = veh_widget.value
+        fare_mod = base_fare * traffic_mult
+
+        if vehicle_type == "Activa": fare_mod *= 0.6
+        elif vehicle_type == "Bike": fare_mod *= 0.7
+        elif vehicle_type == "Auto Rickshaw": fare_mod *= 0.85
+        elif vehicle_type == "Car": fare_mod *= 1.25
+
+        fare_mod += (bags_widget.value * 15)
+        fare_final = max(40, round(fare_mod))
+
+        result_html = f"""
+        <div class="card" style="border-left: 6px solid #000000; color: #1a1a1a;">
+            <h2 style="margin:0 0 10px 0;">💰 Fare Confirmed: ₹{fare_final}</h2>
+            <p style="margin:4px 0;"><b>Route:</b> {p_name} ➔ {d_name}</p>
+            <p style="margin:4px 0;"><b>Est. Ride Time:</b> {est_time} mins | <b>Distance:</b> {dist:.2f} km</p>
+            <p style="margin:4px 0;"><b>Traffic:</b> {traffic} ({traffic_mult}x multiplier applied)</p>
+        </div>
+        """
+        display(HTML(result_html))
+
+        # Show Folium Map
+        map_html = show_map(p_coord, d_coord, p_name, d_name)
+        display(HTML(map_html))
+
+btn_predict.on_click(on_predict_clicked)
+
+def render_predict():
+    with out_predict:
+        clear_output()
+        display(HTML(f"""{style_header}
+        <div class="app-header">
+            <h2 style="margin:0;">📍 Request Uber Ride</h2>
+            <p style="margin:5px 0 0 0; opacity:0.8;">Enter pickup and drop locations below</p>
+        </div>
+        """))
+        display(widgets.VBox([
+            widgets.HBox([p_dd, p_txt]),
+            widgets.HBox([d_dd, d_txt]),
+            widgets.HBox([pax_widget, hr_widget]),
+            widgets.HBox([bags_widget, veh_widget]),
+            btn_predict,
+            out_predict_box
+        ]))
+
+# ------------------ 2. COMPARE RIDES TAB ------------------
+btn_compare = widgets.Button(description="⚖️ COMPARE ALL TRANSIT MODES", button_style='primary', layout={'width': '92%', 'height': '40px'})
+out_comparison_box = widgets.Output()
+
+def on_compare_clicked(b):
+    with out_comparison_box:
+        clear_output()
+        p_name, p_coord = get_location(p_dd, p_txt)
+        d_name, d_coord = get_location(d_dd, d_txt)
+
+        if not p_coord or not d_coord:
+            display(HTML("<p style='color:red;'>❌ Set your trip parameters in the Booking tab first.</p>"))
+            return
+
+        dist = ((d_coord[0]-p_coord[0])**2 + (d_coord[1]-p_coord[1])**2)**0.5 * 111
+        _, _, _, traffic_mult, est_time = analyze_ride_conditions(hr_widget.value, dist)
+
+        p_code = le_pickup.transform([p_name])[0]
+        d_code = le_dropoff.transform([d_name])[0]
+        input_df = pd.DataFrame([[p_code, d_code, dist, 1, hr_widget.value]],
+                                columns=['pickup_code', 'dropoff_code', 'distance_km', 'passenger_count', 'hour'])
+        base_fare = model.predict(input_df)[0]
+
+        vehicles = ['Bike', 'Activa', 'Auto Rickshaw', 'Car']
+        mults = [0.7, 0.6, 0.85, 1.25]
+        time_factors = [0.75, 0.8, 0.9, 1.1]
+
+        rows = ""
+        for v, m, tf in zip(vehicles, mults, time_factors):
+            fare_est = max(40, round(base_fare * traffic_mult * m))
+            dur = max(4, round(est_time * tf))
+            rows += f"""
+            <tr>
+                <td><b>{v}</b></td>
+                <td style='color:#2b6cb0; font-weight:bold;'>₹{fare_est}</td>
+                <td>{dur} mins</td>
+                <td>{dist:.1f} km</td>
+            </tr>
+            """
+
+        table_html = f"""
+        <div class="card" style="color: #1a1a1a;">
+            <h3 style="margin-top:0;">⚖️ Available Ride Alternatives</h3>
+            <table class="tbl">
+                <thead>
+                    <tr>
+                        <th>Vehicle Profile</th>
+                        <th>Est. Price</th>
+                        <th>Arrival Time</th>
+                        <th>Distance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows}
+                </tbody>
+            </table>
+        </div>
+        """
+        display(HTML(table_html))
+
+btn_compare.on_click(on_compare_clicked)
+
+def render_compare():
+    with out_compare:
+        clear_output()
+        display(HTML(f"""{style_header}
+        <div class="app-header">
+            <h2 style="margin:0;">⚖️ Compare Rides</h2>
+            <p style="margin:5px 0 0 0; opacity:0.8;">Compare rates, classes and durations live</p>
+        </div>
+        """))
+        display(widgets.VBox([
+            btn_compare,
+            out_comparison_box
+        ]))
+
+# ------------------ 3. SAFETY TAB ------------------
+sos_logged = widgets.Output()
+
+def trigger_sos(b):
+    with sos_logged:
+        clear_output()
+        now = datetime.datetime.now().strftime('%H:%M:%S')
+        alert_box = f"""
+        <div style="background-color:#fff5f5; border-left: 6px solid #e53e3e; padding:15px; border-radius:8px; margin-top:15px; color:#1a1a1a;">
+            <h4 style="color:#e53e3e; margin:0 0 5px 0;">🚨 SECURE SOS DISPATCHED</h4>
+            <p style="margin:0; font-size:13px;">Live tracking coordinates and vehicle ID successfully sent to Amritsar Central Emergency Dispatch at <b>{now}</b>.</p>
+        </div>
+        """
+        display(HTML(alert_box))
+
+btn_sos = widgets.Button(description="🚨 IN-APP EMERGENCY SOS", button_style='danger', layout={'width': '92%', 'height':'45px'})
+btn_sos.on_click(trigger_sos)
+
+def render_safety():
+    with out_safety:
+        clear_output()
+        display(HTML(f"""{style_header}
+        <div class="app-header" style="background: #4a154b;">
+            <h2 style="margin:0;">🛡️ Women & Safety Protocol</h2>
+            <p style="margin:5px 0 0 0; opacity:0.8;">Secure transit shield and real-time support</p>
+        </div>
+        <div class="card" style="color: #1a1a1a;">
+            <h4 style="margin:0 0 8px 0; color:#4a154b;">🔒 Safe Ride Verification PIN</h4>
+            <p style="margin:0 0 10px 0; font-size:13px; color:#4a5568;">Provide this PIN to the driver before embarking to activate end-to-end GPS protection.</p>
+            <h1 style="color:#4a154b; background-color:#f7ebf6; padding: 10px 20px; display:inline-block; border-radius:8px; margin:0; font-family: monospace; letter-spacing: 2px;">5849</h1>
+        </div>
+        <div class="card" style="color: #1a1a1a;">
+            <h4 style="margin:0 0 5px 0;">👤 Match Status</h4>
+            <p style="margin:2px 0; font-size:13px;"><b>Assigned Driver:</b> Simranjeet Kaur (Verified Woman Partner)</p>
+            <p style="margin:2px 0; font-size:13px;"><b>Reg Number:</b> PB-02-CD-5928</p>
+        </div>
+        """))
+        display(widgets.VBox([
+            widgets.HTML("<p style='font-size:13px; color:#718096;'>Tap below in case of any emergency or unauthorized route deviations.</p>"),
+            btn_sos,
+            sos_logged
+        ]))
+
+# --- App Tab Workspace Initialization ---
+def on_tab_changed(change):
+    idx = change['new']
+    if idx == 0: render_predict()
+    elif idx == 1: render_compare()
+    elif idx == 2: render_safety()
+
+tab = widgets.Tab()
+tab.children = [out_predict, out_compare, out_safety]
+tab.set_title(0, '🚗 Book Ride')
+tab.set_title(1, '⚖️ Compare Rides')
+tab.set_title(2, '🛡️ Women Safety')
+
+tab.observe(on_tab_changed, names='selected_index')
+
+# Trigger Initial Tab View
+render_predict()

@@ -1,0 +1,2 @@
+# ================== GEOLOCATOR ==================
+geolocator = Nominatim(user_agent="smart_uber_app")

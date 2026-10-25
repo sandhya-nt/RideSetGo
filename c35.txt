@@ -1,0 +1,14 @@
+import pickle
+
+# Save the model and encoders
+with open('model.pkl', 'wb') as f:
+    pickle.dump(model, f)
+
+with open('encoders.pkl', 'wb') as f:
+    pickle.dump({
+        'le_pickup': le_pickup,
+        'le_dropoff': le_dropoff,
+        'location_coords': location_coords
+    }, f)
+
+print("✅ Core artifacts serialized successfully!")

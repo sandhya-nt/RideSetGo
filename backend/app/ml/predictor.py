@@ -11,7 +11,7 @@ import os
 import sys
 
 # Ensure project root is on sys.path so `ml` package (at project root) is importable
-_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
@@ -46,7 +46,12 @@ class FarePredictor:
 
     def _ensure_loaded(self) -> bool:
         if self.pipeline is None:
-            self.pipeline = get_pipeline()
+            try:
+                self.pipeline = get_pipeline()
+            except Exception as exc:  # pragma: no cover - defensive
+                import logging
+                logging.getLogger(__name__).exception("Failed to load ML pipeline: %s", exc)
+                return False
         return self.pipeline.is_loaded()
 
     def predict_fare(

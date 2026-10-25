@@ -1,0 +1,2 @@
+### 💻 Step 2: Create Streamlit Frontend Application (`app.py`)
+Here, we write the full interactive Python-based web app. It uses custom CSS styles to produce a beautiful, responsive dark-themed dashboard modeled directly after Uber's user experience guidelines.

@@ -63,9 +63,22 @@
   }
   .dark .card-hover { @apply bg-surface border-rsgo-800; }
   .input-field {
-    @apply w-full px-4 py-3.5 rounded-2xl border border-rsgo-200 focus:ring-2 focus:ring-orange-400 focus:border-orange-500 outline-none transition-all duration-200 bg-rsgo-100 text-rsgo-900 placeholder:text-rsgo-600;
+    @apply w-full px-4 py-3.5 rounded-2xl border border-rsgo-200 focus:ring-2 focus:ring-[#E60023] focus:border-[#E60023] outline-none transition-all duration-200 bg-[#F3EEE6] text-[#111111] placeholder:text-[#7A7068] placeholder:opacity-100 caret-[#111111];
   }
-  .dark .input-field { @apply bg-rsgo-100 text-rsgo-50 placeholder:text-rsgo-600; }
+  .dark .input-field { @apply bg-[#F3EEE6] text-[#111111] placeholder:text-[#7A7068]; }
+  input, textarea, select {
+    color: #111111;
+    caret-color: #111111;
+    background-color: #F3EEE6;
+  }
+  input::placeholder, textarea::placeholder { color: #7A7068; opacity: 1; }
+  input:focus, textarea:focus, select:focus { outline: none; box-shadow: 0 0 0 2px #E60023; }
+  input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus,
+  textarea:-webkit-autofill, select:-webkit-autofill {
+    -webkit-text-fill-color: #111111 !important;
+    -webkit-box-shadow: 0 0 0 1000px #F3EEE6 inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
   .label {
     @apply block text-sm font-medium text-rsgo-700 mb-1.5;
   }

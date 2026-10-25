@@ -1,0 +1,11 @@
+# ================== LOCATION DICT ==================
+locations = list(set(df['pickup_location']).union(set(df['dropoff_location'])))
+
+np.random.seed(42)
+location_coords = {}
+
+for loc in locations:
+    location_coords[loc] = (
+        31.6 + np.random.uniform(-0.1, 0.1),
+        74.8 + np.random.uniform(-0.1, 0.1)
+    )

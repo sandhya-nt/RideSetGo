@@ -1,0 +1,10 @@
+# ================== MAP ==================
+def show_map(p_coord, d_coord, p_name, d_name):
+    m = folium.Map(location=[(p_coord[0]+d_coord[0])/2, (p_coord[1]+d_coord[1])/2], zoom_start=12)
+
+    folium.Marker(p_coord, popup=p_name, icon=folium.Icon(color='green')).add_to(m)
+    folium.Marker(d_coord, popup=d_name, icon=folium.Icon(color='red')).add_to(m)
+
+    folium.PolyLine([p_coord, d_coord], color='blue').add_to(m)
+
+    return m._repr_html_()

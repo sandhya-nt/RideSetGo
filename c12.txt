@@ -1,0 +1,7 @@
+
+# ================== ENCODING ==================
+le_pickup = LabelEncoder()
+le_dropoff = LabelEncoder()
+
+df['pickup_code'] = le_pickup.fit_transform(df['pickup_location'])
+df['dropoff_code'] = le_dropoff.fit_transform(df['dropoff_location'])

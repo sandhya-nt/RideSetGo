@@ -4,6 +4,7 @@ RideSetGo backend configuration.
 Reads settings from environment variables. Never hardcode secrets.
 Copy .env.example to .env and fill in your own values.
 """
+import os
 from functools import lru_cache
 from typing import Optional
 
@@ -26,7 +27,8 @@ class Settings(BaseSettings):
 
     # Database
     DATABASE_URL: str = Field(
-        default="sqlite:///./ridesetgo.db", env="DATABASE_URL"
+        default="sqlite:///" + os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), "ridesetgo.db")),
+        env="DATABASE_URL"
     )
 
     # Security

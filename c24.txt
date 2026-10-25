@@ -1,0 +1,17 @@
+# ================== UI ==================
+pickup_dd = widgets.Dropdown(options=list(location_coords.keys()), description='From:')
+pickup_txt = widgets.Text(placeholder='Type location...', description='Custom:')
+
+drop_dd = widgets.Dropdown(options=list(location_coords.keys()), description='To:')
+drop_txt = widgets.Text(placeholder='Type location...', description='Custom:')
+
+pax = widgets.BoundedIntText(value=1, min=1, max=4, description='Passengers:')
+time = widgets.BoundedIntText(value=12, min=0, max=23, description='Hour:')
+bags = widgets.BoundedIntText(value=0, min=0, max=5, description='Bags/Items:')
+
+vehicle = widgets.Dropdown(options=['Activa', 'Bike', 'Car'], description='Vehicle:')
+
+btn = widgets.Button(description="🚀 GET FARE", button_style='success')
+
+out1 = widgets.Output()
+out2 = widgets.Output()

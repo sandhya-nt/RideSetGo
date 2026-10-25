@@ -1,0 +1,18 @@
+
+
+# ================== GEO FUNCTION ==================
+def get_coordinates(place):
+    try:
+        loc = geolocator.geocode(place)
+        if loc:
+            return (loc.latitude, loc.longitude)
+    except:
+        return None
+    return None
+
+# ================== SUGGESTION FUNCTION ==================
+def suggest_location(name):
+    for loc in location_coords.keys():
+        if name.lower() in loc.lower():
+            return loc
+    return None

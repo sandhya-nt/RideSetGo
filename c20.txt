@@ -1,0 +1,67 @@
+# ================== PREDICT FUNCTION ==================
+def predict_fare(p_dd, p_txt, d_dd, d_txt, pax, hr, vehicle, bags_count):
+
+    p_name, p_coord = get_location(p_dd, p_txt)
+    d_name, d_coord = get_location(d_dd, d_txt)
+
+    if p_coord is None or d_coord is None:
+        return "❌ Location not found. Try nearby place."
+
+    if p_name == d_name:
+        return "❌ Pickup & Drop same hai"
+
+    # Passenger and Bag Restrictions
+    if vehicle == "Activa" or vehicle == "Bike":
+        if pax > 1:
+            return "❌ Activa/Bike allows only 1 passenger."
+        if bags_count > 2:
+            return "❌ Activa/Bike allows a maximum of 2 bags/items."
+    elif vehicle == "Car":
+        if pax > 4:
+            return "❌ Car allows a maximum of 4 passengers."
+        if bags_count > 5:
+            return "❌ Car allows a maximum of 5 bags/items."
+
+    dist = ((d_coord[0]-p_coord[0])**2 + (d_coord[1]-p_coord[1])**2)**0.5 * 111
+
+    # Error handling for unknown locations in LabelEncoder
+    try:
+        p_code = le_pickup.transform([p_name])[0]
+    except ValueError:
+        return f"❌ Pickup location '{p_name}' not recognized by the model. Please select from the dropdown or use a recognized custom location."
+
+    try:
+        d_code = le_dropoff.transform([d_name])[0]
+    except ValueError:
+        return f"❌ Dropoff location '{d_name}' not recognized by the model. Please select from the dropdown or use a recognized custom location."
+
+    # Wrap input data into a DataFrame matching feature names
+    input_data = pd.DataFrame([[
+        p_code, d_code, dist, pax, hr
+    ]], columns=['pickup_code', 'dropoff_code', 'distance_km', 'passenger_count', 'hour'])
+
+    fare = model.predict(input_data)[0]
+
+    # 🚗 Vehicle Pricing and Bag Charges
+    bag_charge_per_item = 20 # Example charge per extra bag
+    if vehicle == "Activa":
+        fare *= 0.6
+        if bags_count > 0:
+            fare += bags_count * bag_charge_per_item # Charge for each bag
+    elif vehicle == "Bike":
+        fare *= 0.8
+        if bags_count > 0:
+            fare += bags_count * bag_charge_per_item # Charge for each bag
+    elif vehicle == "Car":
+        fare *= 1.2
+        if bags_count > 0:
+            fare += bags_count * bag_charge_per_item # Charge for each bag
+
+    return f"""
+🚗 {p_name} → {d_name}
+🛵 Vehicle: {vehicle}
+👥 Passengers: {pax}
+🎒 Bags/Items: {bags_count}
+💰 Fare: ₹{fare:.0f}
+📏 Distance: {dist:.2f} km
+"""

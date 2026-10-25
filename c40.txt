@@ -1,0 +1,28 @@
+%%writefile README.md
+# Uber Amritsar Fare Prediction Web App
+
+This is a clean, production-grade Streamlit web application that serves predictions from our high-accuracy **Random Forest Regressor** trained on the Amritsar Uber Excel dataset.
+
+### 🚀 Quick Start / Local Execution
+To run this app on your local computer:
+
+1. Ensure you have the ML models and encoders exported in the root directory:
+   - `model.pkl`
+   - `encoders.pkl`
+
+2. Install requirements:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Launch the web app:
+   ```bash
+   streamlit run app.py
+   ```
+
+### ☁️ Deployment Instructions
+To deploy this globally on **Streamlit Community Cloud**:
+1. Push `app.py`, `requirements.txt`, `model.pkl`, and `encoders.pkl` to a GitHub repository.
+2. Login to [Streamlit Community Cloud](https://share.streamlit.io/).
+3. Select "New App", bind your repository, and set `app.py` as the main entry point.
+4. Click **Deploy!**

@@ -1,0 +1,10 @@
+# ================== LOAD DATA ==================
+df = pd.read_csv("amritsar_uber_dataset.csv")
+
+df.rename(columns={
+    'pickup_location': 'pickup_location',
+    'drop_location': 'dropoff_location',
+    'fare': 'fare_amount'
+}, inplace=True)
+
+df.dropna(inplace=True)
